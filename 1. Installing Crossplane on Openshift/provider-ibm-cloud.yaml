@@ -1,0 +1,9 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-ibm-cloud
+  namespace: crossplane-system
+spec:
+  package: crossplane/provider-ibm-cloud:alpha
+  controllerConfigRef:
+    name: openshift-config

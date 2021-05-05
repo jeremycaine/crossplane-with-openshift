@@ -1,0 +1,12 @@
+apiVersion: ibmcloud.crossplane.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: ibm-cloud
+spec:
+  credentials:
+    source: Secret
+    secretRef:
+      namespace: crossplane-system
+      name: provider-ibm-cloud-secret
+      key: credentials
+  region: us-south
