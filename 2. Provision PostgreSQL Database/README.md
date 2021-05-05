@@ -49,7 +49,7 @@ NAME                        STATUS   STATE          CLASS   AGE
 mypostgres-via-crossplane            provisioning           111s
 ```
 
-![image of IBM Console](assets/pg-provision.gif)
+![image of IBM Console](/Users/jeremycaine/code/ibm.github.com/crossplane-with-openshift/assets/pg-provision.gif)
 *and on the IBM Cloud Console, you can see the provisioning in progress*
 
 kubectl get resourceinstance.resourcecontrollerv2.ibmcloud.crossplane.io/mypostgres-via-crossplane
