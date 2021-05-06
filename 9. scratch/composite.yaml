@@ -1,0 +1,14 @@
+apiVersion: example.org/v1alpha1
+kind: CompositePostgreSQLInstance
+metadata:
+  name: example-ibm-cloud
+spec:
+  parameters:
+    location: us-west
+    storageGB: 32
+    version: "12"
+  compositionRef:
+    name: example-ibm-cloud
+  writeConnectionSecretToRef:
+    namespace: crossplane-system
+    name: example-postgresqlinstance

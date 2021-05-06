@@ -1,0 +1,14 @@
+apiVersion: acme.org/v1alpha1
+kind: ACMECompositePostgreSQLInstance
+metadata:
+  name: acme-postgres-composite
+spec:
+  parameters:
+    location: au-syd
+    storageGB: 24
+    version: "12"
+  compositionRef:
+    name: acme-postgres-composition-ref
+  writeConnectionSecretToRef:
+    namespace: demo-apps
+    name: acme-postgresqlinstance-conn

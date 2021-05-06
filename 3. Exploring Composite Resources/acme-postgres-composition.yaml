@@ -1,0 +1,87 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: acme-postgres-composition-ref
+  labels:
+    provider: ibm-cloud
+    guide: quickstart
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  compositeTypeRef:
+    apiVersion: acme.org/v1alpha1
+    kind: ACMECompositePostgreSQLInstance
+  patchSets:
+  - name: metadata
+    patches:
+    - fromFieldPath: metadata.labels  
+  resources:
+    - base:
+        apiVersion: resourcecontrollerv2.ibmcloud.crossplane.io/v1alpha1
+        kind: ResourceInstance
+        spec:
+          forProvider:
+            resourceGroupName: default
+            serviceName: databases-for-postgresql
+            resourcePlanName: standard
+            tags:
+              - dev
+              - caine
+              - crossplane
+          providerConfigRef:
+            name: ibm-cloud
+      patches:
+        - type: PatchSet
+          patchSetName: metadata
+        - fromFieldPath: "metadata.name"
+          toFieldPath:  "spec.forProvider.name"    
+        - fromFieldPath: "spec.parameters.location"
+          toFieldPath: "spec.forProvider.target"
+          transforms:
+          - type: map
+            map:
+              us-west: us-south
+              us-east: us-east
+              au-east: au-syd
+        - fromFieldPath: "spec.parameters.storageGB"
+          toFieldPath: "spec.forProvider.parameters.members_disk_allocation_mb"
+          transforms:
+            - type: math
+              math:
+                multiply: 1024 
+        - fromFieldPath: "spec.parameters.version"
+          toFieldPath: "spec.forProvider.parameters.version"              
+    - base:
+        apiVersion: resourcecontrollerv2.ibmcloud.crossplane.io/v1alpha1
+        kind: ResourceKey
+        spec:
+          forProvider:
+            role: Manager
+          providerConfigRef:
+            name: ibm-cloud
+          connectionTemplates:
+            username: "{{ .connection.postgres.authentication.username }}"
+            password: "{{ .connection.postgres.authentication.password }}"
+            endpoint: "jdbc:postgresql://{{ (index .connection.postgres.hosts 0).hostname }}:{{ (index .connection.postgres.hosts 0).port }}{{ .connection.postgres.path }}"
+            host: "{{ (index .connection.postgres.hosts 0).hostname }}"
+            port: "{{ (index .connection.postgres.hosts 0).port }}"
+          writeConnectionSecretToRef:
+            namespace: crossplane-system  
+      patches:
+        - type: PatchSet
+          patchSetName: metadata
+        - fromFieldPath: "metadata.name"
+          toFieldPath:  "spec.forProvider.name"    
+        - fromFieldPath: "metadata.uid"
+          toFieldPath: "spec.writeConnectionSecretToRef.name"
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-postgresql"
+        - fromFieldPath: "spec.resourceRefs[0].name"
+          toFieldPath: "spec.forProvider.sourceRef.name"
+      connectionDetails:
+        - fromConnectionSecretKey: username
+        - fromConnectionSecretKey: password
+        - fromConnectionSecretKey: endpoint
+        - fromConnectionSecretKey: host
+        - fromConnectionSecretKey: port

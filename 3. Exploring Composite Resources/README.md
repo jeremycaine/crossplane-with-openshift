@@ -1,51 +1,54 @@
-## Create Composite Resource for provisining via Crossplane
-Create a 'stack' for OpenShift.
+# 3. Exploring Composite Resources
+As platform engineers Crossplane allows us to define custom 'stacks' which are composition of platform services. Those compositions can be defined to only expose the underlying provider specific parameters that the platform engineering teams want to expose.
 
-3. Create a composition
-Using ...
-4. kubectl describe compositepostgresqlinstance.example.org
-5. create Composite Resource Claim - a claim that use compositeSelector triggers a dynamic provision
-6. kubectl describe mysqlinstanceclaim.example.org example
+A DevOps team then provisions an instance of the 'stack' as their base environment accessing the instances of platform services (and other object specific to them e.g. secrets).
+
+There are different ways to compose and offer these resources to teams (see [here](https://crossplane.io/docs/v1.2/concepts/composition.html))
+
+## Create a User-defined Composition of Platform Services
+Let's look at a simple composition that could represent a 'stack' that an enteprise platform engineering team would assemble.
+
+1. Definitions
+
+  claimNames:
+    kind: ACMEPostgreSQLInstance
+    plural: acmepostgresqlinstances
 
 
-1. Define the composite resource of kind: CompositeResourceDefinition (XRD)
-kubectl apply -f postgres-xrd.yaml
-> compositeresourcedefinition.apiextensions.crossplane.io/compositepostgresqlinstances.example.org created
-kubectl describe xrd compositepostgresqlinstances.example.org
+oc new-project demo-apps
 
-2. Create a Composition
-kubectl apply -f postgres-composition.yaml
-> composition.apiextensions.crossplane.io/example-ibm-cloud created
+Type 1
+kubectl apply -f acme-postgres-definition.yaml
+kubectl apply -f acme-postgres-composition.yaml
+kubectl apply -f acme-postgres-composite.yaml
 
-3. Platform builder creates a Composite so that claims can be made by the Dev platform consumer
-kubectl apply -f postgres-composite.yaml
-> compositepostgresqlinstance.example.org/example-ibm-cloud created
-kubectl describe compositepostgresqlinstance.example.org
+Tyep 2
+kubectl apply -f acme-postgres-definition.yaml
+kubectl apply -f acme-postgres-claim.yaml
 
-4. Create a omposite Resource Claim - a claim that use compositeSelector triggers a dynamic provision
-kubectl apply -f postgres-claim.yaml
-> postgresqlinstance.example.org/example created
 
-kubectl describe postgresqlinstance.example.org
+kubectl apply -f definition.yaml
+compositeresourcedefinition.apiextensions.crossplane.io/compositepostgresqlinstances.example.org created
 
-No resources found in crossplane-system namespace
+kubectl apply -f composite.yaml
+compositepostgresqlinstance.example.org/example-ibm-cloud created
 
-kubectl get resourceinstance 
-kubectl describe secret db-conn -n crossplane-system
+kubectl apply -f composition.yaml
+composition.apiextensions.crossplane.io/example-ibm-cloud created
 
-```
+kubectl apply -f composition.yaml
+composition.apiextensions.crossplane.io/example-ibm-cloud configured
 
-## Finding Services Names
-```
-ic catalog service-marketplace | grep databases-for-postgresql | awk '{print $2}'
-ic catalog service-marketplace | grep satellite | awk '{print $2}'
-ic catalog service-marketplace | grep openshift | awk '{print $2}'
-ic catalog service-marketplace  | awk '{print $2}'
+kubectl apply -f claim.yaml
+postgresqlinstance.example.org/example created
 
-curl --request GET --url 'https://globalcatalog.cloud.ibm.com/api/v1/databases-for-postgresql?complete=true&depth=100' --header 'accept: application/json' | jq '.children[].children[] | .id, .metadata.service.parameters'
+kubectl get resourceinstance
+NAME                      STATUS   STATE    CLASS   AGE
+example-ibm-cloud-sqdm9            active           16h
+example-ljp7z-25292                active           16h
 
-curl --request GET --url 'https://containers.cloud.ibm.com/global/api/v2/satellite?complete=true&depth=100' --header 'accept: application/json' | jq '.children[].children[] | .id, .metadata.service.parameters'
+kubectl delete resourceinstance/example-ljp7z-25292
+kubectl delete resourceinstance/example-ibm-cloud-sqdm9
 
-curl --request GET --url 'https://globalcatalog.cloud.ibm.com/api/v1/databases-for-redis?complete=true&depth=100' --header 'accept: application/json'
 
-https://github.com/IBM/platform-services-go-sdk
+

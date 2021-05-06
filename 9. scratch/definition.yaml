@@ -1,0 +1,48 @@
+apiVersion: apiextensions.crossplane.io/v1beta1
+kind: CompositeResourceDefinition
+metadata:
+  name: compositepostgresqlinstances.example.org
+spec:
+  connectionSecretKeys:
+  - username
+  - password
+  - endpoint
+  - port
+  defaultCompositionRef:
+    name: example-ibm-cloud
+  group: example.org
+  names:
+    kind: CompositePostgreSQLInstance
+    plural: compositepostgresqlinstances
+  claimNames:
+    kind: PostgreSQLInstance
+    plural: postgresqlinstances
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  version:
+                    description: Postgres version
+                    type: string
+                    enum: ["11","12"]
+                  storageGB:
+                    type: integer
+                  location:
+                    description: Geographic location of this PostgreSQL server.
+                    type: string
+                required:
+                - version
+                - storageGB
+                - location
+            required:
+            - parameters

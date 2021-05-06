@@ -49,26 +49,57 @@ NAME                        STATUS   STATE          CLASS   AGE
 mypostgres-via-crossplane            provisioning           111s
 ```
 
-![image of IBM Console](/Users/jeremycaine/code/ibm.github.com/crossplane-with-openshift/assets/pg-provision.gif)
+![image of IBM Console](../assets/pg-provision.gif)
 *and on the IBM Cloud Console, you can see the provisioning in progress*
 
-kubectl get resourceinstance.resourcecontrollerv2.ibmcloud.crossplane.io/mypostgres-via-crossplane
+and then provisioning is complete
+```
+kubectl get resourceinstance mypostgres-via-crossplane
 
-# Delete the instance of Pg database service
-kubectl delete resourceinstance.resourcecontrollerv2.ibmcloud.crossplane.io/postgres-via-crossplane
-kubectl delete resourceinstance postgres-via-crossplane
+NAME                        STATUS   STATE    CLASS   AGE
+mypostgres-via-crossplane            active           42m
 
-# admin
-ibmcloud cdb user-password example-pg admin <newpassword>
-ibmcloud cdb cxn postgres-via-crossplane -s
-
-# composite
-kubectl apply -f composition.yaml
-kubectl get resourceinstance caine-xp-composition
-?? kubectl describe secret postgres-via-crossplane-secret -n crossplane-system
 ```
 
-kubectl describe secret postgres-via-crossplane-secret -n crossplane-system
+## Test the Control Loop
+Now you can see the power of the control loop that Crossplane manages.
+
+We have defined a resource - a PostgreSQL database - that the control plane will ensure is always in place. 
+
+This is a database as a service on IBM Cloud. 
+
+In normal circumstances if we delete this service then all of its data is lost - deletion of the service includes the storage allocation, database data within it, and the backups associated with it. Production enterprise solutions should implement external backup/restore management.
+
+So, within the lifecycle management scope of IBM Cloud Databases, let's see how it interacts with Crossplane's control plane. 
+
+1. See the Managed Resource as active under the Crossplane control plane.
+```
+kubectl get resourceinstance mypostgres-via-crossplane
+
+NAME                        STATUS   STATE    CLASS   AGE
+mypostgres-via-crossplane            active           42m
+```
+
+2. Go to the IBM Cloud console and DELETE the database `mypostgres-via-crossplane`
+What you find is that you cannot. You confirm you want to delete, and status briefly changes to "deleting" but then an error comes back.
+
+*An error occurred during an attempt to complete the operation. Try fixing the issue or try the operation again later.
+
+Description:
+The instance state cannot be saved in the delete operation.*
+
+Crossplane is managing the state of the resource and enforcing it - not allowing an external force to delete it. Pretty neat.
+
+## Take the Database out of Loop
+In order to delete the instance of PostgreSQL database service you have to delete the managed resource that Crossplane is maintaining through the control loop.
+```
+kubectl delete resourceinstance mypostgres-via-crossplane
+
+resourceinstance.resourcecontrollerv2.ibmcloud.crossplane.io "mypostgres-via-crossplane" deleted
+```
+Now in IBM Cloud console you will see the database service deleted from the resource list.
+
+
 
 
 

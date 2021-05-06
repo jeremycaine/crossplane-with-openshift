@@ -1,0 +1,15 @@
+apiVersion: example.org/v1alpha1
+kind: PostgreSQLInstance
+metadata:
+  namespace: default
+  name: example
+spec:
+  parameters:
+    location: us-west
+    storageGB: 32
+    version: "12"
+  compositionSelector:
+    matchLabels:
+      provider: ibm-cloud 
+  writeConnectionSecretToRef:
+    name: db-conn

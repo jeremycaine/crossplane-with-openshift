@@ -1,0 +1,46 @@
+apiVersion: apiextensions.crossplane.io/v1beta1
+kind: CompositeResourceDefinition
+metadata:
+  name: acmecompositepostgresqlinstances.acme.org
+spec:
+  connectionSecretKeys:
+  - username
+  - password
+  - endpoint
+  - host
+  - port
+  defaultCompositionRef:
+    name: acme-postgres-composition-ref
+  group: acme.org
+  names:
+    kind: ACMECompositePostgreSQLInstance
+    plural: acmecompositepostgresqlinstances
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              parameters:
+                type: object
+                properties:
+                  version:
+                    description: Postgres version
+                    type: string
+                    enum: ["11","12"]
+                  storageGB:
+                    type: integer
+                  location:
+                    description: Geographic location of this PostgreSQL server.
+                    type: string
+                required:
+                - version
+                - storageGB
+                - location
+            required:
+            - parameters
