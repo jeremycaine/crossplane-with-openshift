@@ -8,47 +8,59 @@ There are different ways to compose and offer these resources to teams (see [her
 ## Create a User-defined Composition of Platform Services
 Let's look at a simple composition that could represent a 'stack' that an enteprise platform engineering team would assemble.
 
-1. Definitions
+1. User Namespace
+The consuming DevOps team will have their namespaces where they will build and deploy their application that will use the composite platform services.
 
-  claimNames:
-    kind: ACMEPostgreSQLInstance
-    plural: acmepostgresqlinstances
+This namespace is referenced in their composite resource definition so that secrets can be created there and visible to the application.
 
-
+```
 oc new-project demo-apps
+```
 
-Type 1
+2. Definitions
+A `CompositeResourceDefinition` kind object is created that sets out the name of the composite object that will be created, the parameters that can be set (and values), and parameters returned from connection secrets.
+
+It also references the `Composition` resource that wraps the underlying provider service.
+
+```
 kubectl apply -f acme-postgres-definition.yaml
+```
+
+3. Composition
+This resource "assembles" the composite platform service. It specifies the provider and services from that provider. It describes how parameters set by the composite specification, are translated or mapped into the provider specific variables.
+
+```
 kubectl apply -f acme-postgres-composition.yaml
+```
+
+4. Composite
+When this resource object is created or updated it triggers the provisioning and update of the underlying services. It specifies the input parameters and the connection secret that will be created in the user's namespace.
+```
 kubectl apply -f acme-postgres-composite.yaml
+```
 
-Tyep 2
-kubectl apply -f acme-postgres-definition.yaml
-kubectl apply -f acme-postgres-claim.yaml
+In the user namespace you can see the namespaced secret of type `connection.crossplane.io/v1alpha1`
+```
+oc project demo-apps
+oc get secrets
+oc describe secret acme-postgresqlinstance-conn
 
+Name:         acme-postgresqlinstance-conn
+Namespace:    demo-apps
+Labels:       <none>
+Annotations:  <none>
 
-kubectl apply -f definition.yaml
-compositeresourcedefinition.apiextensions.crossplane.io/compositepostgresqlinstances.example.org created
+Type:  connection.crossplane.io/v1alpha1
 
-kubectl apply -f composite.yaml
-compositepostgresqlinstance.example.org/example-ibm-cloud created
+Data
+====
+host:      83 bytes
+password:  64 bytes
+port:      5 bytes
+username:  46 bytes
+endpoint:  118 bytes
+```
 
-kubectl apply -f composition.yaml
-composition.apiextensions.crossplane.io/example-ibm-cloud created
-
-kubectl apply -f composition.yaml
-composition.apiextensions.crossplane.io/example-ibm-cloud configured
-
-kubectl apply -f claim.yaml
-postgresqlinstance.example.org/example created
-
-kubectl get resourceinstance
-NAME                      STATUS   STATE    CLASS   AGE
-example-ibm-cloud-sqdm9            active           16h
-example-ljp7z-25292                active           16h
-
-kubectl delete resourceinstance/example-ljp7z-25292
-kubectl delete resourceinstance/example-ibm-cloud-sqdm9
 
 
 
