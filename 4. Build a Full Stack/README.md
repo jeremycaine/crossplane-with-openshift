@@ -49,7 +49,7 @@ Output
     buildconfig.build.openshift.io "reverse-app-pg" created
     deploymentconfig.apps.openshift.io "reverse-app-pg" created
 --> Success
-    Access your application via route 'reverse-app-pg-route-demo-apps.caine-roks-dev-a01ee4194ed985a1e32b1d96fd4ae346-0000.us-south.containers.appdomain.cloud'
+    Access your application via route '[YOUR ROUTE WILL APPEAR HERE]'
     Build scheduled, use 'oc logs -f bc/reverse-app-pg' to track its progress.
     Run 'oc status' to view your app.
 ```
