@@ -15,10 +15,10 @@ Crossplane as a control plane instantiates custom resource objects in Kubernetes
 
 ## Contents
 
-1. [Installing Crossplane on OpenShift](1.%20Installing Crossplane%on%20Openshift/README.md)  
+1. [Installing Crossplane on OpenShift](1.%20Installing%20Crossplane%20on%20Openshift/README.md)  
 
-2. [Provision of a Cloud Service using Crossplane]()
+2. [Provision of a Cloud Service using Crossplane](2.%20Provision%20PostgreSQL%20Database/README.md)
 
-3. Creating Domain Specific Composite Resources for Consumption
+3. [Creating Domain Specific Composite Resources for Consumption](3.%20Exploring%20Composite%20Resources/README.md)
 
-4. Example of Building a Full Stack of App and its Domain Specific Services
+4. [Example of Building a Full Stack of App and its Domain Specific Services](4.%20Build%20a%20Full%20Stack/README.md)
