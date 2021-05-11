@@ -61,9 +61,10 @@ spec:
           connectionTemplates:
             username: "{{ .connection.postgres.authentication.username }}"
             password: "{{ .connection.postgres.authentication.password }}"
-            endpoint: "jdbc:postgresql://{{ (index .connection.postgres.hosts 0).hostname }}:{{ (index .connection.postgres.hosts 0).port }}{{ .connection.postgres.path }}"
+            jdbcendpoint: "jdbc:postgresql://{{ (index .connection.postgres.hosts 0).hostname }}:{{ (index .connection.postgres.hosts 0).port }}{{ .connection.postgres.path }}"
             host: "{{ (index .connection.postgres.hosts 0).hostname }}"
             port: "{{ (index .connection.postgres.hosts 0).port }}"
+            database: "{{ .connection.postgres.path }}"
           writeConnectionSecretToRef:
             namespace: crossplane-system  
       patches:
@@ -82,6 +83,7 @@ spec:
       connectionDetails:
         - fromConnectionSecretKey: username
         - fromConnectionSecretKey: password
-        - fromConnectionSecretKey: endpoint
+        - fromConnectionSecretKey: jdbcendpoint
         - fromConnectionSecretKey: host
         - fromConnectionSecretKey: port
+        - fromConnectionSecretKey: database

@@ -6,9 +6,10 @@ spec:
   connectionSecretKeys:
   - username
   - password
-  - endpoint
+  - jdbcendpoint
   - host
   - port
+  - database
   defaultCompositionRef:
     name: acme-postgres-composition-ref
   group: acme.org

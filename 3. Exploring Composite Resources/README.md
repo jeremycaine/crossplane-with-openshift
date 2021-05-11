@@ -38,6 +38,12 @@ When this resource object is created or updated it triggers the provisioning and
 ```
 kubectl apply -f acme-postgres-composite.yaml
 ```
+At this point you can see the provisioning process begin in the cluster and on the IBM Cloud console.
+```
+kubectl get resourceinstance
+NAME                            STATUS   STATE          CLASS   AGE
+acme-postgres-composite-6pn7d            provisioning           36s
+```
 
 In the user namespace you can see the namespaced secret of type `connection.crossplane.io/v1alpha1`
 ```
@@ -61,6 +67,14 @@ username:  46 bytes
 endpoint:  118 bytes
 ```
 
-
+5. Deletion
+In order to delete the composite service you need to delete the composite resource object which will in turn delete the underlying resource instances as specified in the composition - and this will trigger the delete action of the provider's services.
+```
+kubectl delete ACMECompositePostgreSQLInstance/acme-postgres-composite
+kubectl delete ACMECompositePostgreSQLInstance
+kubectl delete Composition/acme-postgres-composition-ref
+kubectl delete ACMECompositePostgreSQLInstance
+kubectl delete xrd acmecompositepostgresqlinstances.acme.org
+```
 
 
