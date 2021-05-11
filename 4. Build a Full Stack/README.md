@@ -36,8 +36,8 @@ Output
         * Git Reference=
         * Context Directory=
         * Application Hostname=
-        * GitHub Webhook Secret=lDhbhe48RIkXosmT6auTCOC6MMqsnXT0tD0JpVlR # generated
-        * Generic Webhook Secret=whloaeetiq1N8wbWErwNOBuA2pgQ008MpiWHMSo7 # generated
+        * GitHub Webhook Secret=XXXXXX # generated
+        * Generic Webhook Secret=XXXXX # generated
         * Custom NPM Mirror URL=
         * Server Listen Port=3000
         * Postgres Connection Secret=acme-postgresqlinstance-conn
