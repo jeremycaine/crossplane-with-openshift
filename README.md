@@ -15,7 +15,7 @@ Crossplane as a control plane instantiates custom resource objects in Kubernetes
 
 ## Contents
 
-1. [Installing Crossplane on OpenShift](`1. Installing Crossplane on Openshift`) 
+1. [Installing Crossplane on OpenShift](1.%20Installing Crossplane%on%20Openshift/README.md)  
 
 2. [Provision of a Cloud Service using Crossplane]()
 
