@@ -49,6 +49,10 @@ In the user namespace you can see the namespaced secret of type `connection.cros
 ```
 oc project demo-apps
 oc get secrets
+```
+
+When the database has completed provisioning, the secret's data is populated
+```
 oc describe secret acme-postgresqlinstance-conn
 
 Name:         acme-postgresqlinstance-conn
@@ -70,10 +74,9 @@ endpoint:  118 bytes
 5. Deletion
 In order to delete the composite service you need to delete the composite resource object which will in turn delete the underlying resource instances as specified in the composition - and this will trigger the delete action of the provider's services.
 ```
+oc delete project demo-apps
 kubectl delete ACMECompositePostgreSQLInstance/acme-postgres-composite
-kubectl delete ACMECompositePostgreSQLInstance
 kubectl delete Composition/acme-postgres-composition-ref
-kubectl delete ACMECompositePostgreSQLInstance
 kubectl delete xrd acmecompositepostgresqlinstances.acme.org
 ```
 

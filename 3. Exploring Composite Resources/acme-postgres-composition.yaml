@@ -64,7 +64,7 @@ spec:
             jdbcendpoint: "jdbc:postgresql://{{ (index .connection.postgres.hosts 0).hostname }}:{{ (index .connection.postgres.hosts 0).port }}{{ .connection.postgres.path }}"
             host: "{{ (index .connection.postgres.hosts 0).hostname }}"
             port: "{{ (index .connection.postgres.hosts 0).port }}"
-            database: "{{ .connection.postgres.path }}"
+            database: "{{ .connection.postgres.database }}"
           writeConnectionSecretToRef:
             namespace: crossplane-system  
       patches:
